@@ -5,11 +5,12 @@ import re
 
 LOCAL_PART = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$")
 DOMAIN_LABEL = re.compile(r"^[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$")
+MAX_EMAIL_LENGTH = 254
 
 
 def is_valid_email(address: str) -> bool:
     """Return whether address has a valid common email-address shape."""
-    if not isinstance(address, str) or len(address) > 254:
+    if not isinstance(address, str) or len(address) > MAX_EMAIL_LENGTH:
         return False
     if any(ord(character) > 127 or character.isspace() for character in address):
         return False

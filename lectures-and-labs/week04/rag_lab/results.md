@@ -50,11 +50,11 @@ _One sentence on what a retrieval system does when nothing is relevant:_ Still t
 
 | Chunk size | Right chunk found? | Noise | Notes |
 |------------|--------------------|-------|-------|
-| 50 words   |                    |       |       |
-| 200 words  |                    |       |       |
-| 800 words  |                    |       |       |
+| 50 words   | Yes, all 3 hits from the right file | Low, but the hits are fragments | 66 chunks. Best scores (0.58) but chunks start mid-sentence and "it" has no subject |
+| 200 words  | Yes, 0.42 | Medium, 2 of 3 hits off-topic | 14 chunks. Topics stay together |
+| 800 words  | Yes, 0.42 | High, whole page comes back | 5 chunks, so it is just the whole file. 800 never splits anything |
 
-_One sentence on what goes wrong at each extreme:_
+_One sentence on what goes wrong at each extreme:_ Too small and the chunk loses its subject, too big and the right answer is buried in a page of other stuff.
 
 ---
 

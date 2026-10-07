@@ -40,20 +40,12 @@ def load_documents(data_dir="data"):
     """
     documents = []
 
-    # TODO: Exercise 2.1
-    # Use sorted(os.listdir(data_dir)) to get the files in a stable order
-    # Keep only the .txt files
-    # Read each file and append a (filename, content) tuple to documents
-    #
-    # Hints:
-    # - Use os.path.join() to create full file paths
-    # - Use .endswith('.txt') to filter for text files
-    # - Use 'with open(filepath, 'r', encoding='utf-8')' to read files
-    #
-    # GitHub Copilot Prompt: "Read all text files from a directory and return a sorted list of (filename, content) tuples"
-
-    # YOUR CODE HERE
-    pass  # Remove this line when you add your code
+    for filename in sorted(os.listdir(data_dir)):
+        if not filename.endswith(".txt"):
+            continue
+        filepath = os.path.join(data_dir, filename)
+        with open(filepath, "r", encoding="utf-8") as f:
+            documents.append((filename, f.read()))
 
     return documents
 
@@ -88,8 +80,18 @@ def chunk_text(text, chunk_words=DEFAULT_CHUNK_WORDS, overlap_words=DEFAULT_OVER
     #
     # GitHub Copilot Prompt: "Split text into overlapping chunks of N words with M words of overlap"
 
-    # YOUR CODE HERE
-    pass  # Remove this line when you add your code
+    words = text.split()
+    step = chunk_words - overlap_words
+    if step <= 0:
+        raise ValueError("overlap_words must be smaller than chunk_words")
+
+    start = 0
+    while start < len(words):
+        end = start + chunk_words
+        chunks.append(" ".join(words[start:end]))
+        if end >= len(words):
+            break
+        start += step
 
     return chunks
 
@@ -105,8 +107,6 @@ def generate_embeddings(chunks, model_name=EMBEDDING_MODEL):
     Returns:
         numpy array of embedding vectors, one row per chunk
     """
-    print(f"Loading embedding model: {model_name}...")
-
     # TODO: Exercise 2.3
     # 1. Load the SentenceTransformer model using model_name
     # 2. Use model.encode() to generate embeddings for all chunks
@@ -116,8 +116,8 @@ def generate_embeddings(chunks, model_name=EMBEDDING_MODEL):
     #
     # GitHub Copilot Prompt: "Use sentence-transformers to encode a list of text chunks"
 
-    # YOUR CODE HERE
-    pass  # Remove this line when you add your code
+    model = SentenceTransformer(model_name)
+    return model.encode(chunks)
 
 
 def store_in_chromadb(chunks, embeddings, sources, collection_name=COLLECTION):
@@ -156,8 +156,23 @@ def store_in_chromadb(chunks, embeddings, sources, collection_name=COLLECTION):
     #
     # GitHub Copilot Prompt: "Store text chunks, embeddings and per-chunk metadata in a ChromaDB collection"
 
-    # YOUR CODE HERE
-    pass  # Remove this line when you add your code
+    client = chromadb.PersistentClient(path="./chroma_db")
+    try:
+        client.delete_collection(collection_name)
+    except Exception:
+        pass
+
+    collection = client.create_collection(
+        name=collection_name,
+        configuration={"hnsw": {"space": "cosine"}},
+    )
+    collection.add(
+        documents=chunks,
+        embeddings=embeddings.tolist(),
+        metadatas=[{"source": src} for src in sources],
+        ids=[f"chunk_{i}" for i in range(len(chunks))],
+    )
+    return collection
 
 
 def main():
@@ -183,9 +198,6 @@ def main():
         print("No documents loaded. Check your load_documents() function.")
         return
     print(f"Loaded {len(documents)} documents")
-    for filename, _ in documents:
-        print(f"   - {filename}")
-    print()
 
     # Step 2: Chunk documents, remembering which file each chunk came from
     all_chunks = []
@@ -207,7 +219,6 @@ def main():
         opening = " ".join(all_chunks[1].split()[:5])
         print(f'Overlap check: chunk 1 begins "{opening}..." -- those words also sit '
               f'inside chunk 0: {opening in all_chunks[0]}')
-    print()
 
     # Step 3: Generate embeddings
     embeddings = generate_embeddings(all_chunks)
@@ -220,20 +231,11 @@ def main():
     query_vector = SentenceTransformer(EMBEDDING_MODEL).encode("what is a variable")
     print(f"Query vector (first 5): {[round(float(x), 3) for x in query_vector[:5]]}")
     print(f"Dimensions match: {len(query_vector) == len(embeddings[0])}")
-    print()
 
-    # Step 4: Store in ChromaDB
+    # Step 4: Store chunks, vectors and sources in ChromaDB
     collection = store_in_chromadb(all_chunks, embeddings, sources)
     if collection is None:
-        print("Failed to create collection. Check your store_in_chromadb() function.")
         return
-    print(f"Stored {collection.count()} chunks in ./chroma_db (collection '{COLLECTION}')")
-    print()
-
-    print("=" * 70)
-    print("Part 2 complete. Next: python part3_retrieval.py")
-    print("=" * 70)
-
 
 if __name__ == "__main__":
     main()

@@ -61,23 +61,25 @@ _One sentence on what goes wrong at each extreme:_ Too small and the chunk loses
 ## Part 5: long context versus retrieval (DIY 7)
 
 ```text
-Whole corpus size: ................. [approx tokens]
-Question asked: .................... [your question]
-  RAG answer: ...................... [response]
-  Whole-corpus answer: ............. [response]
-Which was better? .................. [RAG / long context / no difference]
-At what corpus size would this flip? [your reasoning]
+Whole corpus size: ................. ~2626 tokens (5 documents)
+Question asked: .................... What is a variable?
+  RAG answer: ...................... A labeled box that stores information [introduction_to_programming.txt]
+  Whole-corpus answer: ............. Same answer, same source
+Which was better? .................. no difference
+At what corpus size would this flip? Corpus is tiny so it all fits easily. It would flip once it is too big/slow/expensive to send every time (hundreds of pages+), or too long for the model to read properly.
 ```
 
-Repeat for each of the three questions if the answers differed.
+**How do linked lists work?** RAG gave nodes + singly/doubly linked. Whole corpus gave the same and added that they are good at insertions/deletions. Slightly better with long context.
+
+**What is HTML?** Both gave the same answer (tags, headings, links, images). No difference.
 
 **The question the corpus cannot answer** (sourdough):
 
-- No context: ___
-- Whole corpus: ___
-- RAG: ___
+- No context: Gave a confident 5-step recipe from training data.
+- Whole corpus: "I don't know - the provided context does not cover this."
+- RAG: "I don't know - the provided context does not cover this."
 
-_Which of the three declined, and what made the difference?_
+_Which of the three declined, and what made the difference?_ Whole corpus and RAG both declined, no context did not. The "say I don't know" rule in the prompt did it, not retrieval. Both still tacked a made-up [source: ...] onto the "I don't know".
 
 ---
 

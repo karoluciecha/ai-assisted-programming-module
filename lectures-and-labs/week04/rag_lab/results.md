@@ -1,7 +1,7 @@
 # RAG Lab - results
 
-**Name:** _[Your name]_
-**Date:** _[Date]_
+**Name:** Karol Uciecha
+**Date:** 07/10/2026
 
 Fill this in as you go. The README says what each section is for.
 
@@ -9,37 +9,40 @@ Fill this in as you go. The README says what each section is for.
 
 ## Part 1: chunking and embeddings (DIY 1 and 2)
 
-- Documents loaded: ___
-- Chunks produced at 200 words: ___ (shortest ___ words, longest ___ words)
-- Vector dimensionality: ___
-- Did the query vector have the same dimensionality as the chunks? ___
+- Documents loaded: 5
+- Chunks produced at 200 words: 14 (shortest 72 words, longest 200 words)
+- Vector dimensionality: 384
+- Did the query vector have the same dimensionality as the chunks? Yes
 
-_What did the overlap check show?_
+_What did the overlap check show?_ chunk 1 begins "in half, eliminating the half..." -- those words also sit inside chunk 0: True
 
 ---
 
 ## Part 2: retrieval (DIY 3 and 4)
 
-**"what is a variable"** - top hit, score and source: ___
+**"what is a variable"** - top hit, score and source: 0.42 introduction_to_programming.txt "Introduction to Programming Programming is the..."
 
-**"how can my code remember a number for later"** - top hit, score and source: ___
+**"how can my code remember a number for later"** - top hit, score and source: 0.31 introduction_to_programming.txt "Introduction to Programming Programming is the..."
 
-_Same meaning, different words: did both queries find the same chunk?_
+_Same meaning, different words: did both queries find the same chunk?_ Yes, the match score was different but same chunks provided.
 
-**"how do I bake sourdough"** - what came back, and with what scores: ___
+**"how do I bake sourdough"** - what came back, and with what scores:
+  0.09 algorithms_overview.txt "Algorithms Overview An algorithm is a..."
+  0.09 web_development_intro.txt "Web Development Introduction Web development is..."
+  0.04 introduction_to_programming.txt "Introduction to Programming Programming is the..."
 
-_One sentence on what a retrieval system does when nothing is relevant:_
+_One sentence on what a retrieval system does when nothing is relevant:_ Still tries to find the most relevant answer, even if the match score is very faint.
 
 ---
 
 ## Part 3: grounding (DIY 5)
 
 **Q:** What is a variable?
-**A:** ___
-**Source it cited:** ___
+**A:** A variable is like a labeled box that stores information
+**Source it cited:** source: introduction_to_programming.txt
 
 **Q:** How do I bake sourdough?
-**A:** ___ (did it decline?)
+**A:** I don't know - the provided context does not cover this. (did it decline? -- YES)
 
 ---
 

@@ -110,6 +110,7 @@ async def main() -> None:
             say("\n7. power 2 ^ 10")
             result = await session.call_tool("power", {"x": 2, "y": 10})
             say(f"   {result.content[0].text}")
+            await session.call_tool("add", {"a": 1, "b": 2})
 
     say("\n" + "=" * 60)
     say("Done. Scroll up for the trace; DIY 1 asks you to read it.")

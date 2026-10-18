@@ -96,6 +96,7 @@ async def call_tool(name: str, arguments: dict) -> list[TextContent]:
         else:
             text = f"Result: {arguments['a']} / {arguments['b']} = {arguments['a'] / arguments['b']}"
     elif name == "power":
+        print("[server] power called", file=sys.stderr, flush=True)
         text = f"Result: {arguments['x']} ^ {arguments['y']} = {arguments['x'] ** arguments['y']}"
     else:
         raise ValueError(f"Unknown tool: {name}")
